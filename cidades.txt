@@ -1,8 +1,0 @@
-SBO, Americana;
-SBO, Piracicaba;
-Americana, SBO;
-Americana, Campinas;
-Campinas, Americana;
-Piracicaba, SBO;
-SBO;
-Campinas;
