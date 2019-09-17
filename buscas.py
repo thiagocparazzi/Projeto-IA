@@ -50,36 +50,41 @@ def bfs(graph, start, goal):
         if node == goal:
             return path
         #neighbours (vizinhos) recebe o grafo a partir do nó atual
-        neighbours = graph[node]
+        elif node in graph:
+            neighbours = graph[node]
         #se um vizinho estiver no grafo de vizinhos
         #cria-se uma rota - através do caminho e adiciona tal vizinho a rota
         #a fila adiciona a rota
-        for neighbour in neighbours: 
-            route = list(path)
-            route.append(neighbour)
-            queue.append(route)
+            for neighbour in neighbours: 
+                route = list(path)
+                route.append(neighbour)
+                queue.append(route)
 
 #busca em profundidade (Depth-First Search) entre cidade de origem e cidade de destino
 def dfs(graph, start, goal):
-    #a pilha inicia-se com a cidade de origem
-    stack = [(start, [start])]
-    #prepara a lista de nós visitados
-    visited = set()
+    #uma pilha que se inicia com a cidade de origem
+    stack = []
+    stack.append([start])
     #enquanto a pilha não estiver vazia, fará tal processo
     while stack:
-        #node e path recebem o último valor da pilha
-        (node, path) = stack.pop()
-        #se o nó não estiver em visitado, será adicionado
-        if node not in visited:
-            if node == goal:
-                return path
-            visited.add(node)
-            #neighbours (vizinhos) recebe o grafo a partir do nó atual
+        #pega o primeiro caminho (path) da pilha
+        path = stack.pop()
+        #pega o último nó do caminho
+        node = path[-1]
+        #caso o caminho tenha sido encontrado
+        if node == goal:
+            return path
+        #neighbours (vizinhos) recebe o grafo a partir do nó atual
+        elif node in graph:
             neighbours = graph[node]
-            #os vizinhos do grafo atual serão adicionados a fila, junto com seu caminho e lista de vizinhos
-            for neighbour in neighbours:
-                route = (neighbour, path + [neighbour])
+        #se um vizinho estiver no grafo de vizinhos
+        #cria-se uma rota - através do caminho e adiciona tal vizinho a rota
+        #a pilha adiciona a rota
+            for neighbour in neighbours: 
+                route = list(path)
+                route.append(neighbour)
                 stack.append(route)
+
         
 #####---MAIN---#####
 cities = readFile()
