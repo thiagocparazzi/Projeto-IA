@@ -15,28 +15,12 @@ def dictionary_data(data):
         key, value, distance = line.split(',')
         key = key.replace(',', '')
         value = value.replace(',', '')
-        distance = distance.replace(';', '')
-        #se a chave não estiver em cidades, ele recebe um valor, caso contrário é adicionado um novo valor
-        if key not in d:
-            d[key] = [value, distance]
-        else:
-            d[key].append(value)
-            d[key].append(distance)
-    return d
-
-def dictionary_data_cost(data):
-    d = {}
-    for line in data:
-        key, value, distance = line.split(',')
-        key = key.replace(',', '')
-        value = value.replace(',', '')
         distance = int(distance.replace(';', '').replace('\n', ''))
         #se a chave não estiver em cidades, ele recebe um valor, caso contrário é adicionado um novo valor
         if key not in d:
-            d[key] = [{value: distance}]
+            d[key] = {value: distance}
         else:
-            d[key].append({value: distance})
-            print(d[key])
+            d[key][value] = distance
     return d
 
 #busca em largura (Breadth-First Search) entre cidade de origem e cidade de destino #FIFO
@@ -92,33 +76,30 @@ def dfs(graph, start, goal):
 #busca de custo uniforme (Uniform Cost Search), utilizando o menor caminho entre cidades
 def ucs(graph, start, goal):
     #uma fila que se inicia com a cidade de origem
-    visited = []
     queue = []
     queue.append([start])
     #enquanto a fila não estiver vazia, fará tal processo
     while queue:
         #pega o primeiro caminho (path) da fila
         path = queue.pop(0)
-        print('Path: ', path)
         #pega o último nó do caminho
         node = path[-1]
-        if type(node) == dict:
-            node = list(node.items())[0]
-            print('Node -> ', node, 'Tipo - ', type(node))
-            visited.append(node[0][0])
-            print('Visited:', visited)
+        #print('Node:', node)
         #caso o caminho tenha sido encontrado
         if node == goal:
-            return visited
+            return path
         #neighbours (vizinhos) recebe o grafo a partir do nó atual
         elif node in graph:
             neighbours = graph[node]
-            print('Vizinhos -> ', neighbours)
+            #ordena o grafo com o menor valor em primeiro
+            sorted_graph = dict(sorted(neighbours.items(), key=lambda kv: kv[1]))
+            neighbours = sorted_graph
+            print(neighbours) 
         #se um vizinho estiver no grafo de vizinhos
         #cria-se uma rota - através do caminho e adiciona tal vizinho a rota
         #a fila adiciona a rota
             for neighbour in neighbours: 
-                route = list(visited)
+                route = list(path)
                 route.append(neighbour)
                 queue.append(route)
 
@@ -137,12 +118,11 @@ else:
     start = start[0].replace(';', '')
 
 graph = dictionary_data(cities)
-graph_cost = dictionary_data_cost(cities)
 
 bfs = bfs(graph, start, goal)
 dfs = dfs(graph, start, goal)
-ucs = ucs(graph_cost, start, goal)
+ucs = ucs(graph, start, goal)
 
 print('Rota de Largura: ', bfs)
 print('Rota de Profundidade: ', dfs)
-print('Rota de Custo Uniforme: ', ucs)
+print('Rota de Custo Uniforme: ', ucs, '--- Distância Total: ')
