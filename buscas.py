@@ -80,21 +80,17 @@ def ucs(graph, start, goal):
     queue.append([start])
     #enquanto a fila não estiver vazia, fará tal processo
     while queue:
+        queue = sortQ(graph, queue)
         #pega o primeiro caminho (path) da fila
         path = queue.pop(0)
         #pega o último nó do caminho
         node = path[-1]
-        #print('Node:', node)
         #caso o caminho tenha sido encontrado
         if node == goal:
             return path
         #neighbours (vizinhos) recebe o grafo a partir do nó atual
         elif node in graph:
             neighbours = graph[node]
-            #ordena o grafo com o menor valor em primeiro
-            sorted_graph = dict(sorted(neighbours.items(), key=lambda kv: kv[1]))
-            neighbours = sorted_graph
-            print(neighbours) 
         #se um vizinho estiver no grafo de vizinhos
         #cria-se uma rota - através do caminho e adiciona tal vizinho a rota
         #a fila adiciona a rota
@@ -103,6 +99,27 @@ def ucs(graph, start, goal):
                 route.append(neighbour)
                 queue.append(route)
 
+def cost(graph, queue):
+    cost = 0
+    for i in range(0,len(queue)-1):
+        cost += graph[queue[i]][queue[i+1]]
+    return cost
+
+def sortQ(graph, queue):
+    ordenado = []
+    ordenado.append(queue.pop())
+    while queue:
+        e = queue.pop()
+        cost2 = cost(graph, e)
+        if cost2 > cost(graph, ordenado[-1]):
+            ordenado.append(e)
+        else:
+            for x in ordenado:
+                custo = cost(graph, x)
+                if cost2 <= custo :
+                    ordenado.insert(ordenado.index(x), e) 
+                    break  
+    return ordenado
         
 #####---MAIN---#####
 cities = readFile()
@@ -122,7 +139,8 @@ graph = dictionary_data(cities)
 bfs = bfs(graph, start, goal)
 dfs = dfs(graph, start, goal)
 ucs = ucs(graph, start, goal)
+cost = cost(graph, ucs)
 
 print('Rota de Largura: ', bfs)
 print('Rota de Profundidade: ', dfs)
-print('Rota de Custo Uniforme: ', ucs, '--- Distância Total: ')
+print('Rota de Custo Uniforme: ', ucs, '- Custo Total: ', cost)
